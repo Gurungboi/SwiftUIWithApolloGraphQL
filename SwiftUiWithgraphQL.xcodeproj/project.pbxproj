@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		10C30F46290F890C00107708 /* schema.json in Resources */ = {isa = PBXBuildFile; fileRef = 10C30F45290F890C00107708 /* schema.json */; };
+		10C30F4B290F89A700107708 /* LaunchList.graphql in Sources */ = {isa = PBXBuildFile; fileRef = 10C30F4A290F89A700107708 /* LaunchList.graphql */; };
 		10DEBF75290C2F6000676E52 /* SwiftUiWithgraphQLApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10DEBF74290C2F6000676E52 /* SwiftUiWithgraphQLApp.swift */; };
 		10DEBF77290C2F6000676E52 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10DEBF76290C2F6000676E52 /* ContentView.swift */; };
 		10DEBF79290C2F6100676E52 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 10DEBF78290C2F6100676E52 /* Assets.xcassets */; };
@@ -35,6 +37,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		10C30F45290F890C00107708 /* schema.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = schema.json; sourceTree = "<group>"; };
+		10C30F4A290F89A700107708 /* LaunchList.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = LaunchList.graphql; sourceTree = "<group>"; };
 		10DEBF71290C2F6000676E52 /* SwiftUiWithgraphQL.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftUiWithgraphQL.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		10DEBF74290C2F6000676E52 /* SwiftUiWithgraphQLApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftUiWithgraphQLApp.swift; sourceTree = "<group>"; };
 		10DEBF76290C2F6000676E52 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -96,10 +100,12 @@
 		10DEBF73290C2F6000676E52 /* SwiftUiWithgraphQL */ = {
 			isa = PBXGroup;
 			children = (
+				10C30F45290F890C00107708 /* schema.json */,
 				10DEBF74290C2F6000676E52 /* SwiftUiWithgraphQLApp.swift */,
 				10DEBF76290C2F6000676E52 /* ContentView.swift */,
 				10DEBF78290C2F6100676E52 /* Assets.xcassets */,
 				10DEBF7A290C2F6100676E52 /* Preview Content */,
+				10C30F4A290F89A700107708 /* LaunchList.graphql */,
 			);
 			path = SwiftUiWithgraphQL;
 			sourceTree = "<group>";
@@ -136,6 +142,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 10DEBF95290C2F6100676E52 /* Build configuration list for PBXNativeTarget "SwiftUiWithgraphQL" */;
 			buildPhases = (
+				10C30F49290F898100107708 /* Generate Apollo GraphQL API */,
 				10DEBF6D290C2F6000676E52 /* Sources */,
 				10DEBF6E290C2F6000676E52 /* Frameworks */,
 				10DEBF6F290C2F6000676E52 /* Resources */,
@@ -240,6 +247,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				10DEBF7C290C2F6100676E52 /* Preview Assets.xcassets in Resources */,
+				10C30F46290F890C00107708 /* schema.json in Resources */,
 				10DEBF79290C2F6100676E52 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -260,12 +268,34 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		10C30F49290F898100107708 /* Generate Apollo GraphQL API */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 8;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Generate Apollo GraphQL API";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+			shellPath = /bin/sh;
+			shellScript = "# Go to the build root and search up the chain to find the Derived Data Path where the source packages are checked out.\nDERIVED_DATA_CANDIDATE=\"${BUILD_ROOT}\"\n\nwhile ! [ -d \"${DERIVED_DATA_CANDIDATE}/SourcePackages\" ]; do\n  if [ \"${DERIVED_DATA_CANDIDATE}\" = / ]; then\n    echo >&2 \"error: Unable to locate SourcePackages directory from BUILD_ROOT: '${BUILD_ROOT}'\"\n    exit 1\n  fi\n\n  DERIVED_DATA_CANDIDATE=\"$(dirname \"${DERIVED_DATA_CANDIDATE}\")\"\ndone\n\n# Grab a reference to the directory where scripts are checked out\nSCRIPT_PATH=\"${DERIVED_DATA_CANDIDATE}/SourcePackages/checkouts/apollo-ios/scripts\"\n\nif [ -z \"${SCRIPT_PATH}\" ]; then\n    echo >&2 \"error: Couldn't find the CLI script in your checked out SPM packages; make sure to add the framework to your project.\"\n    exit 1\nfi\n\ncd \"${SRCROOT}/${TARGET_NAME}\"\n\n\"${SCRIPT_PATH}\"/run-bundled-codegen.sh schema:download --endpoint=https://swapi-graphql.netlify.app/.netlify/functions/index/query schema.json\n\n\"${SCRIPT_PATH}\"/run-bundled-codegen.sh codegen:generate --target=swift --includes=./**/*.graphql --localSchemaFile=\"schema.json\" API.swift\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		10DEBF6D290C2F6000676E52 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				10DEBF77290C2F6000676E52 /* ContentView.swift in Sources */,
+				10C30F4B290F89A700107708 /* LaunchList.graphql in Sources */,
 				10DEBF75290C2F6000676E52 /* SwiftUiWithgraphQLApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
